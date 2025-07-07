@@ -13,13 +13,13 @@ export const Home = () => {
 	const swapiURL = "https://www.swapi.tech/api/";
 
 	useEffect(() => {
-		fetch(`${swapiURL}people`)
+		fetch(`${swapiURL}people/?expanded=true`)
 			.then((response) => response.json())
 			.then((data) => setCharacters(data.results))
 			.catch((error) => console.error(error.message))
 			.finally(() => setLoadedCharacters(true));
 
-		fetch(`${swapiURL}planets`)
+		fetch(`${swapiURL}planets/?expanded=true`)
 			.then((response) => response.json())
 			.then((data) => setPlanets(data.results))
 			.catch((error) => console.error(error.message))

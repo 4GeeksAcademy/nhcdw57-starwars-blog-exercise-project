@@ -2,36 +2,23 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export const Card = (props) => {
-
-    const [contentData, setContentData] = useState();
-
-    useEffect(() => {
-        const isACharacter = props.typeName === 'Characters';
-        const isALocation = props.typeName === 'Locations';
-        let fetchURL = "https://www.swapi.tech/api/";
-        let cardContent = [];
+    const isACharacter = props.typeName === 'Characters';
+    const isALocation = props.typeName === 'Locations';
+    let cardContent = [];
 
 
-        // The following code was designed to give card body contents, but there's too many requests
-
-        // if (isACharacter) { // if else if is used in case more card types are added other than character/locations
-        //     fetchURL = fetchURL + `people/${props.content.uid}`;
-        // } else if (isALocation) {
-        //     fetchURL = fetchURL + `planets/${props.content.uid}`;
-        // }
-        // fetch(fetchURL)
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         setContentData(data.result);
-        //         if (isACharacter){
-        //             cardContent = [`Gender: ${contentData.gender}`,`Hair Color: ${contentData.hair_color}`,`Eye-Color: ${contentData.eye_color}`].map((element,index)=>(<p className="card-text" key={index}>{element}</p>));
-        //         } else if(isALocation){
-
-        //         }
-        //     }).catch((error) => console.error(error.message));
-
-
-    }, []);
+    if (isACharacter) {
+        cardContent = [
+            `Gender: ${props.content.properties.gender}`, 
+            `Hair Color: ${props.content.properties.hair_color}`, 
+            `Eye-Color: ${props.content.properties.eye_color}`
+        ].map((element, index) => (<p className="card-text mb-0" key={index}>{element}</p>));
+    } else if (isALocation) {
+        cardContent = [
+            `Population: ${props.content.properties.population}`, 
+            `Terrain: ${props.content.properties.terrain}`
+        ].map((element, index) => (<p className="card-text mb-0" key={index}>{element}</p>));
+    }
 
 
 
@@ -40,9 +27,9 @@ export const Card = (props) => {
             <div className="card" style={{ width: "18rem" }}>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Large_bonfire.jpg" className="card-img-top" alt="..." />
                 <div className="card-body">
-                    <h5 className="card-title">{props.content.name}</h5>
-                    { }
-                    <span className="d-flex justify-content-between">
+                    <h5 className="card-title fs-2">{props.content.properties.name}</h5>
+                    {cardContent}
+                    <span className="d-flex justify-content-between mt-3">
                         <Link to={`/${props.typeName}/${props.content.uid}`}>
                             <button href="#" className="btn btn-primary text-primary" style={{ backgroundColor: "white" }}>
                                 Learn More!
@@ -61,7 +48,22 @@ export const Card = (props) => {
 
 // What props.content Looks like:
 //     {
+//       "properties": {
+//         "created": "2025-07-06T23:28:13.123Z",
+//         "edited": "2025-07-06T23:28:13.123Z",
+//         "name": "Luke Skywalker",
+//         "gender": "male",
+//         "skin_color": "fair",
+//         "hair_color": "blond",
+//         "height": "172",
+//         "eye_color": "blue",
+//         "mass": "77",
+//         "homeworld": "https://www.swapi.tech/api/planets/1",
+//         "birth_year": "19BBY",
+//         "url": "https://www.swapi.tech/api/people/1"
+//       },
+//       "_id": "5f63a36eee9fd7000499be42",
+//       "description": "A person within the Star Wars universe",
 //       "uid": "1",
-//       "name": "Tatooine",
-//       "url": "https://www.swapi.tech/api/planets/1"
+//       "__v": 2
 //     }
