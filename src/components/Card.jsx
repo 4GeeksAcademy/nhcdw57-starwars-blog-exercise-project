@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Card = (props) => {
+    const {favs, setFavs} = useGlobalReducer();
+    const [isNotInFavs, setIsNotInFavs] = useState(true);
     const isACharacter = props.typeName === 'Characters';
     const isALocation = props.typeName === 'Locations';
     let cardContent = [];
+
+    useEffect(()=>{
+        setIsNotInFavs(favs.find((element)=>props.content.properties.name === element.content.properties.name) === undefined);
+    },[favs]);
 
 
     if (isACharacter) {
@@ -20,6 +27,21 @@ export const Card = (props) => {
         ].map((element, index) => (<p className="card-text mb-0" key={index}>{element}</p>));
     }
 
+    function toggleFav(){
+        if(isNotInFavs){
+            setFavs((oldFavList)=>{
+                let newFavList = [...oldFavList,props];
+                return newFavList
+            });
+            setIsNotInFavs(false);
+        } else if(!isNotInFavs){
+            setFavs((oldFavList)=>{
+                let newFavList = oldFavList.filter((element)=>props.content.properties.name !== element.content.properties.name);
+                return newFavList
+            });
+            setIsNotInFavs(true);
+        }
+    }
 
 
     return (
@@ -30,14 +52,12 @@ export const Card = (props) => {
                     <h5 className="card-title fs-2">{props.content.properties.name}</h5>
                     {cardContent}
                     <span className="d-flex justify-content-between mt-3">
-                        <Link to={`/${props.typeName}/${props.content.uid}`}>
-                            <button href="#" className="btn btn-primary text-primary" style={{ backgroundColor: "white" }}>
+                        <Link to={`/${props.typeName}/${props.content.uid}`} className="btn btn-primary text-primary" style={{ backgroundColor: "white" }}>
                                 Learn More!
-                            </button>
                         </Link>
-                        <a href="#" className="btn btn-warning text-warning" style={{ backgroundColor: "white" }}>
-                            <i className="bi bi-heart" />
-                        </a>
+                        <button className="btn btn-warning text-warning" onClick={()=>toggleFav()} style={{ backgroundColor: "white" }}>
+                            <i className={(isNotInFavs)?"bi bi-heart":"bi bi-heart-fill"} />
+                        </button>
                     </span>
 
                 </div>

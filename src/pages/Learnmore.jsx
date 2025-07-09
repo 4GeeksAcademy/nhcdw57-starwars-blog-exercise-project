@@ -5,13 +5,13 @@ import useGlobalReducer from "../hooks/useGlobalReducer";  // Import a custom ho
 import { useEffect, useState } from "react";
 
 // Define and export the Single component which displays individual item details.
-export const Learnmore = props => {
+export const Learnmore = () => {
   // Access the global state using the custom hook.
 
   // Retrieve the 'theId' URL parameter using useParams hook.
   const { theId, infoType } = useParams()
-  const isACharacter = infoType === 'Characters';
-  const isALocation = infoType === 'Locations';
+  let isACharacter = infoType === 'Characters';
+  let isALocation = infoType === 'Locations';
   let fetchURL = "https://www.swapi.tech/api/";
   const [contentData, setContentData] = useState();
   const [loaded, setLoaded] = useState(false);
@@ -35,6 +35,9 @@ export const Learnmore = props => {
   let infoContent = [];
 
   useEffect(() => {
+    setLoaded(false);
+    isACharacter = infoType === 'Characters';
+    isALocation = infoType === 'Locations';
     if (isACharacter) { // if else if is used in case more card types are added other than character/locations
       fetchURL = fetchURL + `people/${theId}`;
     } else if (isALocation) {
@@ -43,17 +46,17 @@ export const Learnmore = props => {
     fetch(fetchURL)
       .then((response) => response.json())
       .then((data) => {
-        setContentData(data.result.properties);
-        console.log(data.result.properties);
+        setContentData(data.result);
+        // console.log(data.result);
         if (isACharacter) {
           setInfos(characterInfoSet);
-          console.log(infoContent);
+          // console.log(infoContent);
         } else if (isALocation) {
           setInfos(planetInfoSet);
         }
       }).catch((error) => console.error(error.message))
       .finally(() => setLoaded(true));
-  }, []);
+  }, [theId]);
 
   if (!loaded) {
     return (
@@ -66,21 +69,21 @@ export const Learnmore = props => {
   if (contentData) {
     if (isACharacter) {
       infoContent = [
-        `${contentData.name}`,
-        `${contentData.birth_year}`,
-        `${contentData.gender}`,
-        `${contentData.height}`,
-        `${contentData.skin_color}`,
-        `${contentData.eye_color}`,
+        `${contentData.properties.name}`,
+        `${contentData.properties.birth_year}`,
+        `${contentData.properties.gender}`,
+        `${contentData.properties.height}`,
+        `${contentData.properties.skin_color}`,
+        `${contentData.properties.eye_color}`,
       ].map((element, index) => (<div className="col text-center" key={index}>{element}</div>));
     } else if (isALocation) {
       infoContent = [
-        `${contentData.name}`,
-        `${contentData.climate}`,
-        `${contentData.population}`,
-        `${contentData.orbital_period}`,
-        `${contentData.rotation_period}`,
-        `${contentData.diameter}`
+        `${contentData.properties.name}`,
+        `${contentData.properties.climate}`,
+        `${contentData.properties.population}`,
+        `${contentData.properties.orbital_period}`,
+        `${contentData.properties.rotation_period}`,
+        `${contentData.properties.diameter}`
       ].map((element, index) => (<div className="col text-center" key={index}>{element}</div>));
     }
   }
@@ -94,8 +97,9 @@ export const Learnmore = props => {
           </div>
         </div>
         <div className="col-6 text-center">
-          <h1>{contentData?.name ?? ""}</h1>
-          <p className="mt-3">Have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!</p>
+          <h1>{contentData.properties?.name ?? ""}</h1>
+          <p className="mt-3">{contentData.description}</p>
+          <p className="mt-3">But have you heard of the critically acclaimed MMORPG Final Fantasy XIV? With an expanded free trial which you can play through the entirety of A Realm Reborn and the award-winning Stormblood expansion up to level 70 for free with no restrictions on playtime!</p>
         </div>
       </div>
       <div className="row border-top border-danger text-danger">
